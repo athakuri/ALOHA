@@ -18,6 +18,91 @@ namespace ALOHA.Models
 {
     public class CategoryModel
     {
+        public bool Add(Category category)
+        {
+            SqlConnection con = null;
+            bool result = false;
+            try
+            {
+                con = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+                SqlCommand cmd = new SqlCommand();
+                cmd.CommandText = "Insert into Category(name_Category,description_Category) values ('" + category.C_Name + category.C_desc+"')";
+                cmd.Connection = con;
+                cmd.CommandType = CommandType.Text;
+                con.Open();
+                cmd.ExecuteNonQuery();
+                return result = true;
+            }
+            catch (Exception ex)
+            {
+                return result = false;
+            }
+            finally
+            {
+                con.Close();
+            }
+        }
+         public List<Category> SelectAll()
+        {
+            SqlConnection con = null;
+            DataTable dt = null;
+            List<Category> list = new List<Category>();
+            try
+            {
+                con = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+                SqlCommand cmd = new SqlCommand();
+                cmd.CommandText = "select * from Category";
+                cmd.Connection = con;
+                cmd.CommandType = CommandType.Text;
+                con.Open();
+                SqlDataAdapter da = new SqlDataAdapter();
+                da.SelectCommand = cmd;
+                dt = new DataTable();
+                da.Fill(dt);
+                list = dt.AsEnumerable().Select(r => new Category()
+                {
+                    Name = (string) r["Name"],
+                    Id = (int) r["Id"]
+                }
+                    ).ToList();
+
+                return list;
+            }
+            catch (Exception ex)
+            {
+                return list;
+            }
+            finally
+            {
+                con.Close();
+            }
+        }
+
+        public bool Edit(Category category)
+        {
+            SqlConnection con = null;
+            bool result = false;
+            try
+            {
+                con = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
+                SqlCommand cmd = new SqlCommand();
+                cmd.CommandText = "Update Category set name_category='" + category.C_Name + "' + description_category='" + category.C_desc + "';
+                cmd.Connection = con;
+                cmd.CommandType = CommandType.Text;
+                con.Open();
+                cmd.ExecuteNonQuery();
+                return result = true;
+            }
+            catch (Exception ex)
+            {
+                return result = false;
+            }
+            finally
+            {
+                con.Close();
+            }
+        }
+
         public bool delete(String C_Name)
         {
             System.Data.SqlClient.SqlConnection con = null;
@@ -26,7 +111,7 @@ namespace ALOHA.Models
             {
                 con = new SqlConnection(ConfigurationManager.ConnectionStrings["DefaultConnection"].ToString());
                 System.Data.SqlClient.SqlCommand cmd = new SqlCommand();
-                cmd.CommandText = "Delete Category where name_category = " + C_Name;
+                cmd.CommandText = "Delete * from Category where name_category = " + C_Name;
                 cmd.Connection = con;
                 cmd.CommandType = System.Data.CommandType.Text;
                 con.Open();
